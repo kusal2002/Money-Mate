@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.moneymate.HomeFragment"
+        android:label="Home" />
+
+    <fragment
+        android:id="@+id/statisticsFragment"
+        android:name="com.example.moneymate.StatisticsFragment"
+        android:label="Statistics" />
+
+    <fragment
+        android:id="@+id/transactionsFragment"
+        android:name="com.example.moneymate.TransactionsFragment"
+        android:label="Transactions" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.moneymate.SettingsFragment"
+        android:label="Settings">
+        <action
+            android:id="@+id/action_settingsFragment_to_generalSettingFragment"
+            app:destination="@id/generalSettingFragment"
+            app:popUpTo="@id/settingsFragment"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_settingsFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment"
+            app:popUpTo="@id/settingsFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/generalSettingFragment"
+        android:name="com.example.moneymate.GeneralSettingFragment"
+        android:label="General Setting">
+        <action
+            android:id="@+id/action_generalSettingFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment"
+            app:popUpTo="@id/generalSettingFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.example.moneymate.EditProfileFragment"
+        android:label="Edit Profile">
+        <action
+            android:id="@+id/action_editProfileFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment"
+            app:popUpTo="@id/editProfileFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+</navigation>
