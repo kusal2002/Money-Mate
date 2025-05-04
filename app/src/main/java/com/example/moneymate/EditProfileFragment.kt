@@ -33,7 +33,6 @@ class EditProfileFragment : Fragment() {
         }
 
         val usernameEditText: TextInputEditText = view.findViewById(R.id.usernameEditText)
-        val phoneEditText: TextInputEditText = view.findViewById(R.id.phoneEditText)
         val emailEditText: TextInputEditText = view.findViewById(R.id.emailEditText)
         val currentPasswordEditText: TextInputEditText = view.findViewById(R.id.currentPasswordEditText)
         val newPasswordEditText: TextInputEditText = view.findViewById(R.id.newPasswordEditText)
@@ -42,12 +41,10 @@ class EditProfileFragment : Fragment() {
 
         // Pre-fill fields
         usernameEditText.setText(prefsHelper.getUsername())
-        phoneEditText.setText(prefsHelper.getPhone() ?: "")
         emailEditText.setText(prefsHelper.getEmail() ?: "")
 
         saveButton.setOnClickListener {
             val newUsername = usernameEditText.text.toString().trim()
-            val newPhone = phoneEditText.text.toString().trim()
             val newEmail = emailEditText.text.toString().trim()
             val currentPassword = currentPasswordEditText.text.toString()
             val newPassword = newPasswordEditText.text.toString()
@@ -67,12 +64,6 @@ class EditProfileFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            // Validate phone (if provided)
-            if (newPhone.isNotEmpty() && !android.util.Patterns.PHONE.matcher(newPhone).matches()) {
-                phoneEditText.error = "Invalid phone number"
-                Toast.makeText(requireContext(), "Invalid phone number", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
 
             // Password change logic
             val storedPassword = prefsHelper.getPassword()
@@ -112,7 +103,6 @@ class EditProfileFragment : Fragment() {
 
             // Save other profile details
             prefsHelper.saveUsername(newUsername)
-            prefsHelper.savePhone(newPhone)
             prefsHelper.saveEmail(newEmail)
 
             Toast.makeText(

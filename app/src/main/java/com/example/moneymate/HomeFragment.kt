@@ -5,9 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -75,6 +78,7 @@ class HomeFragment : Fragment() {
         val expenditureText: TextView = view.findViewById(R.id.expenditureText)
         val transactionRecycler: RecyclerView = view.findViewById(R.id.transactionRecycler)
         val addTransactionBtn: FloatingActionButton = view.findViewById(R.id.addTransactionFab)
+        val setBudgetButton: Button = view.findViewById(R.id.setBudgetButton)
 
         // Set username and account number
         val username = prefsHelper.getUsername()
@@ -112,6 +116,48 @@ class HomeFragment : Fragment() {
         addTransactionBtn.setOnClickListener {
             (requireActivity() as MainActivity).startAddTransactionActivity()
         }
+
+        // Set Budget button listener
+        setBudgetButton.setOnClickListener {
+            showBudgetDialog(totalBalanceText, incomeText, expenditureText)
+        }
+    }
+
+    private fun showBudgetDialog(
+        totalBalanceText: TextView,
+        incomeText: TextView,
+        expenditureText: TextView
+    ) {
+        // Create an EditText for the dialog
+        val editText = EditText(requireContext()).apply {
+            hint = "Enter your budget (e.g., 1000)"
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+            setText(prefsHelper.getMonthlyBudget()?.toString() ?: "")
+        }
+
+        // Create the dialog
+        AlertDialog.Builder(requireContext())
+            .setTitle("Set Monthly Budget")
+            .setMessage("Enter your monthly budget in ${prefsHelper.getCurrency()}")
+            .setView(editText)
+            .setPositiveButton("Save") { _, _ ->
+                val budgetText = editText.text.toString().trim()
+                val budget = budgetText.toDoubleOrNull()
+
+                if (budget == null || budget < 0) {
+                    Toast.makeText(requireContext(), "Please enter a valid budget", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+
+                // Save the budget using PrefsHelper
+                prefsHelper.saveMonthlyBudget(budget)
+                // Update the UI
+                updateBalanceAndTransactions(totalBalanceText, incomeText, expenditureText)
+                checkBudgetStatus()
+                Toast.makeText(requireContext(), "Budget set to ${prefsHelper.getCurrency()} $budget", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun updateBalanceAndTransactions(
@@ -127,6 +173,14 @@ class HomeFragment : Fragment() {
         totalBalanceText.text = "${String.format("%,.0f", balance)} ${prefsHelper.getCurrency()}"
         incomeText.text = "${income.toInt()} ${prefsHelper.getCurrency()}"
         expenditureText.text = "${expenses.toInt()} ${prefsHelper.getCurrency()}"
+
+        // Update the current budget text
+        val currentBudgetText = view?.findViewById<TextView>(R.id.currentBudgetText)
+        currentBudgetText?.text = if (budget > 0) {
+            "Current Budget: ${prefsHelper.getCurrency()} ${String.format("%,.0f", budget)}"
+        } else {
+            "Current Budget: Not Set"
+        }
 
         adapter.updateTransactions(transactions)
     }

@@ -12,7 +12,6 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var prefsHelper: PrefsHelper
     private lateinit var usernameEditText: EditText
     private lateinit var passwordEditText: EditText
-    private lateinit var phoneEditText: EditText
     private lateinit var emailEditText: EditText
     private lateinit var registerButton: Button
     private lateinit var loginLink: TextView
@@ -25,7 +24,6 @@ class RegisterActivity : AppCompatActivity() {
 
         usernameEditText = findViewById(R.id.usernameEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
-        phoneEditText = findViewById(R.id.phoneEditText)
         emailEditText = findViewById(R.id.emailEditText)
         registerButton = findViewById(R.id.registerButton)
         loginLink = findViewById(R.id.loginLink)
@@ -42,7 +40,6 @@ class RegisterActivity : AppCompatActivity() {
     private fun registerUser() {
         val username = usernameEditText.text.toString().trim()
         val password = passwordEditText.text.toString().trim()
-        val phone = phoneEditText.text.toString().trim()
         val email = emailEditText.text.toString().trim()
 
         // Basic validation
@@ -61,11 +58,6 @@ class RegisterActivity : AppCompatActivity() {
             return
         }
 
-        if (phone.isNotEmpty() && !phone.matches(Regex("\\d{10}"))) {
-            Toast.makeText(this, "Please enter a valid 10-digit phone number", Toast.LENGTH_SHORT).show()
-            return
-        }
-
         if (email.isNotEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toast.makeText(this, "Please enter a valid email address", Toast.LENGTH_SHORT).show()
             return
@@ -74,7 +66,6 @@ class RegisterActivity : AppCompatActivity() {
         // Save user details using PrefsHelper
         prefsHelper.saveUsername(username)
         prefsHelper.savePassword(password)
-        if (phone.isNotEmpty()) prefsHelper.savePhone(phone)
         if (email.isNotEmpty()) prefsHelper.saveEmail(email)
         prefsHelper.setLoggedIn(true)
 

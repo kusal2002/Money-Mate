@@ -75,14 +75,17 @@ class StatisticsFragment : Fragment() {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val calendar = Calendar.getInstance()
 
-        // Get the past 7 days
+        // Get the past 7 days, including today
         val dailyIncome = FloatArray(7) { 0f }
         val dailyExpenses = FloatArray(7) { 0f }
         val days = arrayOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+        val dayLabels = mutableListOf<String>()
 
+        // Start from today and go back 6 days
         for (i in 0 until 7) {
-            calendar.add(Calendar.DAY_OF_YEAR, -1)
             val dateStr = dateFormat.format(calendar.time)
+            val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+            dayLabels.add(days[dayOfWeek - 1]) // Calendar.DAY_OF_WEEK: 1 (Sunday) to 7 (Saturday)
 
             transactions.filter { it.date == dateStr }.forEach { transaction ->
                 if (transaction.isExpense) {
@@ -91,14 +94,17 @@ class StatisticsFragment : Fragment() {
                     dailyIncome[i] += transaction.amount.toFloat()
                 }
             }
+            calendar.add(Calendar.DAY_OF_YEAR, -1)
         }
 
         // Total income and expenses
         val totalIncome = transactions.filter { !it.isExpense }.sumOf { it.amount }
         val totalExpenses = transactions.filter { it.isExpense }.sumOf { it.amount }
 
-        incomeText.text = "$${String.format("%.2f", totalIncome)}"
-        expenseText.text = "$${String.format("%.2f", totalExpenses)}"
+        // Use the selected currency from PrefsHelper
+        val currency = prefsHelper.getCurrency()
+        incomeText.text = "${String.format("%.2f", totalIncome)} $currency"
+        expenseText.text = "${String.format("%.2f", totalExpenses)} $currency"
 
         // Setup bar chart
         val incomeEntries = dailyIncome.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
@@ -118,7 +124,7 @@ class StatisticsFragment : Fragment() {
 
         // Customize X-axis
         val xAxis = barChart.xAxis
-        xAxis.valueFormatter = IndexAxisValueFormatter(days.reversedArray())
+        xAxis.valueFormatter = IndexAxisValueFormatter(dayLabels.reversed().toTypedArray())
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.setDrawGridLines(false)
         xAxis.labelCount = 7
@@ -127,7 +133,7 @@ class StatisticsFragment : Fragment() {
         barChart.axisLeft.setDrawGridLines(false)
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false
-        barChart.legend.isEnabled = false
+        barChart.legend.isEnabled = true // Enable legend to distinguish income vs expenses
         barChart.setFitBars(true)
         barChart.invalidate()
 

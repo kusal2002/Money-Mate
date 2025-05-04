@@ -17,13 +17,6 @@ class LoginActivity : AppCompatActivity() {
 
         prefsHelper = PrefsHelper(this)
 
-        // Check if user is already logged in
-        if (prefsHelper.isLoggedIn()) {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-            return
-        }
-
         // Schedule daily expense reminder if enabled
         if (prefsHelper.isDailyExpenseReminderEnabled()) {
             ExpenseReminderReceiver.scheduleDailyReminder(this)
@@ -61,7 +54,9 @@ class LoginActivity : AppCompatActivity() {
             // Validate credentials
             if (username == storedUsernameForLogin && password == storedPassword) {
                 prefsHelper.setLoggedIn(true)
-                startActivity(Intent(this, MainActivity::class.java))
+                val intent = Intent(this, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
                 finish()
                 Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
             } else {

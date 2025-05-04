@@ -23,7 +23,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Income and Expenses"
+            android:text="Income and Expenses (Last 7 Days)"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             android:layout_marginBottom="8dp" />
@@ -81,7 +81,7 @@
                         android:id="@+id/incomeText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="$0.00"
+                        android:text="0.00 USD"
                         android:textColor="@android:color/black"
                         android:textSize="20sp"
                         android:textStyle="bold"
@@ -129,7 +129,7 @@
                         android:id="@+id/expenseText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="$0.00"
+                        android:text="0.00 USD"
                         android:textColor="@android:color/black"
                         android:textSize="20sp"
                         android:textStyle="bold"
@@ -151,7 +151,4 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
-
-
-
 </ScrollView>
